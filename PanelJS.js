@@ -14,13 +14,24 @@ export class PanelJS {
 
 
     startup() {
-        this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
-        this._el.addEventListener("touchmove", evt => this.touchMove(evt), true);
-        this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
-        this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
-        this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true); 
-        this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
-        console.log(this._ns.scrollHeight, "scroll height")
+
+        //Check if panelJS element exists
+        if(this._el){
+            this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
+            this._el.addEventListener("touchmove", evt => this.touchMove(evt), true);
+            this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
+            this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
+        } else {
+            console.log("No element found with id panelJS");
+        }
+        //Check if no scroll element exists
+        if(this._ns){
+            this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true);
+            this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
+            //console.log(this._ns.scrollHeight, "scroll height")
+        }
+        
+        
 
         this.closeFull();
         
@@ -56,7 +67,7 @@ export class PanelJS {
         this._stage2Size = -(-100 / 100); //work out the size for the full state
 
         this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
-        console.log(window);
+        //console.log(window);
         return this._stagedPosition;
     }
     /*
@@ -75,7 +86,7 @@ export class PanelJS {
         this._el.style.transition = "0s"; //reset transition
         this._fh.style.webkitTransition = "0s";
         this._fh.style.transition = "0s";
-        console.log("TOUCHSTART")
+        //console.log("TOUCHSTART")
         this._clientY = e.changedTouches[0].clientY; //initial touch point
     }
 
@@ -83,7 +94,7 @@ export class PanelJS {
     touchMove(e) {
         this._clientYNew = e.touches[0].clientY; //new touch position coordinates
         this._fh.style.bottom = 0;
-        console.log("TOUCHMOVE")
+        //console.log("TOUCHMOVE")
         this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
             //Define the limits of the user swiping to prevent the card coming off the screen
             if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
@@ -104,7 +115,7 @@ export class PanelJS {
             this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
             }
         } else {
-            console.log("Do not draw")
+            //console.log("Do not draw")
         }
     }
 
@@ -173,12 +184,18 @@ export class PanelJS {
         if(this._lock == false) {
             if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
-            }
-            else if(difference > 0) {
+            } 
+            else if(difference > 100) {
                 this._swipeDirection = 0; //upward swipe
             }
-            else if(difference < 0) {
+            else if(difference > 0) {
+                this._swipeDirection = 3; //no swipe, reject and give a fake value
+            }
+            else if(difference < 100) {
                 this._swipeDirection = 1; //downward swipe
+            }
+            else if(difference < 0) {
+                this._swipeDirection = 3; //no swipe, reject and give a fake value
             }
 
             //Manage upward swipes
@@ -217,9 +234,7 @@ export class PanelJS {
             }
         }
     }
-
     cancelTouch(e) {
-    alert("CANCELLED");
-    }
-    
+        alert("CANCELLED");
+    } 
 }
