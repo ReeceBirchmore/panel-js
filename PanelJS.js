@@ -1,61 +1,30 @@
 export class PanelJS {
 
-    /*******************************************************
-     * PanelJS
-     * **************************************************/
 
-        /*clientYNew;
-        clientY;
-        newPositionY;
-        
-        swipeDirection;
-        ; //current staged position of the element
-        stage0Size;
-        stage1Size;
-        stage2Size;
-        stagedPosition;
-
-        el;
-        ns;
-        fh;
-        
-        */
-
-    constructor() {
-        
+    constructor() {      
         this._oldPosition = 0;
         this._snapPosition = 0
         this._lock = false;
         this._transitionSpeed = '0.2s';
-        console.log("Swipey bois is starting...");
         this._el = document.getElementById("panelJS"); //declare the element in use
         this._ns = document.getElementById("timesPreventScroll");
         this._fh = document.getElementById("fabholder");
         this.startup();
-        this._self = this;
     }
 
 
-
     startup() {
-    //this.pc = document.getElementById("pageContent");
-    this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
-    this._el.addEventListener("touchmove", evt => this.touchMove(evt), true);
-    this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
-    this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
-    this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true); 
-    this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
-    console.log(this._ns.scrollHeight, "scroll height")
-    console.log(this._el);
-    console.log(this._ns);
-    console.log(this._fh);
-    console.log(this);
+        this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
+        this._el.addEventListener("touchmove", evt => this.touchMove(evt), true);
+        this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
+        this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
+        this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true); 
+        this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
+        console.log(this._ns.scrollHeight, "scroll height")
 
-    this.closeFull();
+        this.closeFull();
         
-
-    //Run the initial start, make the element display as closed
-
+        //Run the initial start, make the element display as closed
     }
 
 
@@ -81,14 +50,14 @@ export class PanelJS {
     */
 
     coolMathGames(stageSize) {
-    //determine staging sizes and translations
-    this._stage0Size = -(-20 / 100); //work out the size for the closed state
-    this._stage1Size = -(-50 / 100); //work out the size for the half state
-    this._stage2Size = -(-100 / 100); //work out the size for the full state
+        //determine staging sizes and translations
+        this._stage0Size = -(-20 / 100); //work out the size for the closed state
+        this._stage1Size = -(-50 / 100); //work out the size for the half state
+        this._stage2Size = -(-100 / 100); //work out the size for the full state
 
-    this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
-    console.log(window);
-    return this._stagedPosition;
+        this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
+        console.log(window);
+        return this._stagedPosition;
     }
     /*
     * This is activated whenever the user presses a finger on the screen
@@ -101,9 +70,6 @@ export class PanelJS {
     */
 
     touchStart(e) {
-        console.log(this);
-        console.log(this._el)
-        console.log("yiss")
         this._lock = false;
         this._el.style.webkitTransition = "0s"; //reset transition
         this._el.style.transition = "0s"; //reset transition
