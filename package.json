@@ -1,0 +1,19 @@
+{
+  "name": "panel-js",
+  "version": "1.0.0",
+  "description": "Swipe card module for Angular",
+  "main": "PanelJS.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joolsh625/panel-js.git"
+  },
+  "author": "Reece Birchmore",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joolsh625/panel-js/issues"
+  },
+  "homepage": "https://github.com/joolsh625/panel-js#readme"
+}
