@@ -11,6 +11,10 @@
     "url": "git+https://github.com/joolsh625/panel-js.git"
   },
   "author": "Reece Birchmore",
+  "contributors": [
+    "Reece Birchmore",
+    "Jools Hattey"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/joolsh625/panel-js/issues"
