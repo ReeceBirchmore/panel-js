@@ -3,7 +3,7 @@ export class PanelJS {
 
     constructor() {      
         this._oldPosition = 0;
-        this._snapPosition = 0
+        this._snapPosition = 0;
         this._lock = false;
         this._transitionSpeed = '0.2s';
         this._el = document.getElementById("panelJS"); //declare the element in use
@@ -47,10 +47,9 @@ export class PanelJS {
     noScroll(e){
         this._clientYNew = e.touches[0].clientY;
         
-        if(this._clientYNew > this._clientY && this._ns.scrollTop <= 0)
-        {
-        this._lock = false; 
-        this.touchMove(e);  
+        if(this._clientYNew > this._clientY && this._ns.scrollTop <= 0) {
+            this._lock = false; 
+            this.touchMove(e);  
         }
 
     }
@@ -84,8 +83,11 @@ export class PanelJS {
         this._lock = false;
         this._el.style.webkitTransition = "0s"; //reset transition
         this._el.style.transition = "0s"; //reset transition
-        this._fh.style.webkitTransition = "0s";
-        this._fh.style.transition = "0s";
+        if(this._fh) {
+            this._fh.style.webkitTransition = "0s";
+            this._fh.style.transition = "0s";    
+        }
+        
         //console.log("TOUCHSTART")
         this._clientY = e.changedTouches[0].clientY; //initial touch point
     }
@@ -94,10 +96,12 @@ export class PanelJS {
     touchMove(e) {
         this._clientYNew = e.touches[0].clientY; //new touch position coordinates
         this._fh.style.bottom = 0;
+
+        
         //console.log("TOUCHMOVE")
         this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
-            //Define the limits of the user swiping to prevent the card coming off the screen
-            if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
+        //Define the limits of the user swiping to prevent the card coming off the screen
+        if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
             this._el.style.webkitTransform = 'translateY(' + -this._newPositionY + 'px)';
             this._el.style.transform = 'translateY(' + -this._newPositionY + 'px)';
             this._el.style.mozTransform = 'translateY(' + -this._newPositionY + 'px)';
@@ -108,14 +112,14 @@ export class PanelJS {
             let mathsNum = window.innerHeight / 2;
 
             if(this._newPositionY < mathsNum) {
-            let fhPosition = -this._newPositionY -10;    
-            this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
-            this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
-            this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
-            this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
+                let fhPosition = -this._newPositionY -10;    
+                this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
+                this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
+                this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
+                this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';    
             }
         } else {
-            //console.log("Do not draw")
+        //console.log("Do not draw")
         }
     }
 
@@ -148,6 +152,7 @@ export class PanelJS {
         this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
 
+        
     }
     //stage 0 expansion
     closeFull() {
@@ -166,6 +171,7 @@ export class PanelJS {
         this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
+        
     }
 
 
@@ -236,5 +242,5 @@ export class PanelJS {
     }
     cancelTouch(e) {
         alert("CANCELLED");
-    } 
+    }
 }
