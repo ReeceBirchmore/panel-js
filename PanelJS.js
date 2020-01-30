@@ -106,6 +106,7 @@ export class PanelJS {
             this._el.style.transform = 'translateY(' + -this._newPositionY + 'px)';
             this._el.style.mozTransform = 'translateY(' + -this._newPositionY + 'px)';
             this._el.style.oTransform = 'translateY(' + -this._newPositionY + 'px)';
+            //this.moveFab(-this._newPositionY);
 
 
             //Work out inner height, halve it
@@ -113,10 +114,7 @@ export class PanelJS {
 
             if(this._newPositionY < mathsNum) {
                 let fhPosition = -this._newPositionY -10;    
-                this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
-                this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
-                this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
-                this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';    
+                this.moveFab(fhPosition)  
             }
         } else {
         //console.log("Do not draw")
@@ -126,52 +124,47 @@ export class PanelJS {
 
     //stage 2 expansion
     expandFull() {
-        this._el.style.webkitTransition = this._transitionSpeed;
-        this._el.style.transition = this._transitionSpeed;
-        this._el.style.transform = 'translateY(-100%)';
-        this._el.style.webkitTransform = 'translateY(-100%)';
-        this._el.style.backgroundColor = "brown";
+        this.animatePanel('100', "brown");
         this.coolMathGames(this._stage2Size);
         this._oldPosition = this._stagedPosition;
     }
+
     //stage 1 expansion
     expandHalf() {
-        this._el.style.webkitTransition = this._transitionSpeed;
-        this._el.style.transition = this._transitionSpeed;
-        this._el.style.transform = 'translateY(-50%)';
-        this._el.style.webkitTransform = 'translateY(-50%)';
-        this._el.style.backgroundColor = "green";
+        this.animatePanel('50', "green");
         this.coolMathGames(this._stage1Size);
         this._oldPosition = this._stagedPosition;
 
         let fhPosition = -this._oldPosition -10;  
-        this._fh.style.webkitTransition = this._transitionSpeed;
-        this._fh.style.transition = this._transitionSpeed;
-        this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
-
-        
+        this.moveFab(fhPosition);
     }
+    
     //stage 0 expansion
     closeFull() {
-        this._el.style.webkitTransition = this._transitionSpeed;
-        this._el.style.transition = this._transitionSpeed;
-        this._el.style.transform = 'translateY(-20%)';
-        this._el.style.webkitTransform = 'translateY(-20%)';
-        this._el.style.backgroundColor = "blue";
+        this.animatePanel('20', "blue");
         this.coolMathGames(this._stage0Size);
         this._oldPosition = this._stagedPosition;
 
         let fhPosition = -this._oldPosition -10;  
+        this.moveFab(fhPosition);
+        
+    }
+
+    animatePanel(elPosition, color) {
+        this._el.style.webkitTransition = this._transitionSpeed;
+        this._el.style.transition = this._transitionSpeed;
+        this._el.style.transform = 'translateY(-'+ elPosition +'%)';
+        this._el.style.webkitTransform = 'translateY(-'+ elPosition +'%)';
+        this._el.style.backgroundColor = color;
+    }
+
+    moveFab(fhPosition) {
         this._fh.style.webkitTransition = this._transitionSpeed;
         this._fh.style.transition = this._transitionSpeed;
         this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
         this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
-        
     }
 
 
