@@ -1,3 +1,4 @@
+
 export class PanelJS {
 
 
@@ -9,6 +10,7 @@ export class PanelJS {
         this._el = document.getElementById("panelJS"); //declare the element in use
         this._ns = document.getElementById("timesPreventScroll");
         this._fh = document.getElementById("fabholder");
+        this._height = window.innerHeight;
         this.startup();
     }
 
@@ -30,8 +32,6 @@ export class PanelJS {
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
             //console.log(this._ns.scrollHeight, "scroll height")
         }
-        
-        
 
         this.closeFull();
         
@@ -81,14 +81,7 @@ export class PanelJS {
 
     touchStart(e) {
         this._lock = false;
-        this._el.style.webkitTransition = "0s"; //reset transition
-        this._el.style.transition = "0s"; //reset transition
-        if(this._fh) {
-            this._fh.style.webkitTransition = "0s";
-            this._fh.style.transition = "0s";    
-        }
-        
-        //console.log("TOUCHSTART")
+        document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
         this._clientY = e.changedTouches[0].clientY; //initial touch point
     }
 
@@ -96,25 +89,18 @@ export class PanelJS {
     touchMove(e) {
         this._clientYNew = e.touches[0].clientY; //new touch position coordinates
         this._fh.style.bottom = 0;
-
         
-        //console.log("TOUCHMOVE")
         this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
         //Define the limits of the user swiping to prevent the card coming off the screen
         if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
-            this._el.style.webkitTransform = 'translateY(' + -this._newPositionY + 'px)';
-            this._el.style.transform = 'translateY(' + -this._newPositionY + 'px)';
-            this._el.style.mozTransform = 'translateY(' + -this._newPositionY + 'px)';
-            this._el.style.oTransform = 'translateY(' + -this._newPositionY + 'px)';
-            //this.moveFab(-this._newPositionY);
-
+            document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
 
             //Work out inner height, halve it
             let mathsNum = window.innerHeight / 2;
 
             if(this._newPositionY < mathsNum) {
-                let fhPosition = -this._newPositionY -10;    
-                this.moveFab(fhPosition)  
+                let fhPosition = -this._newPositionY; 
+                this.moveFab(fhPosition);
             }
         } else {
         //console.log("Do not draw")
@@ -124,47 +110,38 @@ export class PanelJS {
 
     //stage 2 expansion
     expandFull() {
-        this.animatePanel('100', "brown");
-        this.coolMathGames(this._stage2Size);
-        this._oldPosition = this._stagedPosition;
+        this.animatePanel('100', "brown", this._stage2Size);
     }
 
     //stage 1 expansion
     expandHalf() {
-        this.animatePanel('50', "green");
-        this.coolMathGames(this._stage1Size);
-        this._oldPosition = this._stagedPosition;
+        this.animatePanel('50', "green", this._stage1Size);
 
-        let fhPosition = -this._oldPosition -10;  
+        let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
     }
     
     //stage 0 expansion
     closeFull() {
-        this.animatePanel('20', "blue");
-        this.coolMathGames(this._stage0Size);
-        this._oldPosition = this._stagedPosition;
+        this.animatePanel('20', "blue", this._stage0Size);
 
-        let fhPosition = -this._oldPosition -10;  
+        let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
-        
     }
 
-    animatePanel(elPosition, color) {
-        this._el.style.webkitTransition = this._transitionSpeed;
-        this._el.style.transition = this._transitionSpeed;
-        this._el.style.transform = 'translateY(-'+ elPosition +'%)';
-        this._el.style.webkitTransform = 'translateY(-'+ elPosition +'%)';
-        this._el.style.backgroundColor = color;
+    animatePanel(elPosition, color, stageSize) {
+        if(!this._el.classList.contains("move")) {
+            this._el.classList.add("move");
+        }
+        document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
+        document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
+        this.coolMathGames(stageSize);
+        this._oldPosition = this._stagedPosition;
     }
 
     moveFab(fhPosition) {
-        this._fh.style.webkitTransition = this._transitionSpeed;
-        this._fh.style.transition = this._transitionSpeed;
-        this._fh.style.webkitTransform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.transform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.mozTransform = 'translateY(' + fhPosition + 'px)';
-        this._fh.style.oTransform = 'translateY(' + fhPosition + 'px)';
+        this._fh.classList.add("final-fab-pos");
+        document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)')
     }
 
 
@@ -176,6 +153,7 @@ export class PanelJS {
     */
 
     touchEnd(e) {
+        //this._fh.style.bottom = null;
         //Find the direction the user swiped, useful for staging later
         this._clientYNew = e.changedTouches[0].clientY;
 
@@ -237,3 +215,4 @@ export class PanelJS {
         alert("CANCELLED");
     }
 }
+

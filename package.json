@@ -19,5 +19,6 @@
   "bugs": {
     "url": "https://github.com/ReeceBirchmore/panel-js/issues"
   },
-  "homepage": "https://github.com/ReeceBirchmore/panel-js#readme"
+  "homepage": "https://github.com/ReeceBirchmore/panel-js#readme",
+  "dependencies": {}
 }
