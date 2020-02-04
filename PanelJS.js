@@ -137,7 +137,7 @@ export class PanelJS {
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
         document.documentElement.style.setProperty("--background-color", color);
-        
+        console.log(color);
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
         console.log(this._oldPosition, "1")
