@@ -100,7 +100,7 @@ export class PanelJS {
 
             if(this._newPositionY < mathsNum) {
                 let fhPosition = -this._newPositionY; 
-                this.moveFab(fhPosition);
+                document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)')
             }
         } else {
         //console.log("Do not draw")
@@ -127,6 +127,7 @@ export class PanelJS {
 
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
+        console.log(this._oldPosition, "2")
     }
 
     animatePanel(elPosition, color, stageSize) {
@@ -137,11 +138,14 @@ export class PanelJS {
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
+        console.log(this._oldPosition, "1")
     }
 
     moveFab(fhPosition) {
         this._fh.classList.add("final-fab-pos");
         document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)')
+        document.documentElement.style.backgroundColor="green";
+        console.log(this._oldPosition, "3")
     }
 
 
@@ -162,16 +166,16 @@ export class PanelJS {
             if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
             } 
-            else if(difference > 100) {
+            else if(difference > 1) {
                 this._swipeDirection = 0; //upward swipe
             }
-            else if(difference > 0) {
+            else if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
             }
-            else if(difference < 100) {
+            else if(difference < 0) {
                 this._swipeDirection = 1; //downward swipe
             }
-            else if(difference < 0) {
+            else if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
             }
 
