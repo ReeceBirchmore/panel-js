@@ -20,5 +20,7 @@
     "url": "https://github.com/ReeceBirchmore/panel-js/issues"
   },
   "homepage": "https://github.com/ReeceBirchmore/panel-js#readme",
-  "dependencies": {}
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  }
 }

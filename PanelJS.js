@@ -1,9 +1,15 @@
+import { BehaviorSubject } from 'rxjs';
+import 'rxjs/add/observable/of';
+
 
 export class PanelJS {
 
 
     constructor() {      
         this._oldPosition = 0;
+
+        
+
         this._snapPosition = 0;
         this._lock = false;
         this._transitionSpeed = '0.2s';
@@ -14,9 +20,13 @@ export class PanelJS {
         this.startup();
     }
 
+    SnapPos() {
+        return this._snapPositionObservable;
+    }
+
 
     startup() {
-
+        console.log("Active")
         //Check if panelJS element exists
         if(this._el){
             this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
@@ -24,7 +34,7 @@ export class PanelJS {
             this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
             this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
         } else {
-            console.log("No element found with id panelJS");
+            //console.log("No element found with id panelJS");
         }
         //Check if no scroll element exists
         if(this._ns){
@@ -64,6 +74,7 @@ export class PanelJS {
         this._stage0Size = -(-20 / 100); //work out the size for the closed state
         this._stage1Size = -(-50 / 100); //work out the size for the half state
         this._stage2Size = -(-100 / 100); //work out the size for the full state
+        this._stageSettingSize = -(-75 / 100) //work out the size for the settings
 
         this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
         //console.log(window);
@@ -108,6 +119,12 @@ export class PanelJS {
     }
 
 
+//stage 1 expansion
+    expandSettings() {
+        this.animatePanel('75', "green", this._stageSettingSize);
+        
+    }
+
     //stage 2 expansion
     expandFull() {
         this.animatePanel('100', "brown", this._stage2Size);
@@ -127,7 +144,6 @@ export class PanelJS {
 
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
-        console.log(this._oldPosition, "2")
     }
 
     animatePanel(elPosition, color, stageSize) {
@@ -137,17 +153,16 @@ export class PanelJS {
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
         document.documentElement.style.setProperty("--background-color", color);
-        console.log(color);
+
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
-        console.log(this._oldPosition, "1")
     }
 
     moveFab(fhPosition) {
         this._fh.classList.add("final-fab-pos");
         document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)' )
         document.documentElement.style.backgroundColor="green";
-        console.log(this._oldPosition, "3")
+
     }
 
 
@@ -201,6 +216,9 @@ export class PanelJS {
             //Manage downward swipes
             if(this._swipeDirection == '1' && this._snapPosition == 1) {
                 this.closeFull();
+                console.log("HELLO")
+                this._snapPositionObservable.next(0);
+                console.log("HELLO2")
                 this._snapPosition = 0;
             }
             if(this._swipeDirection == '1' && this._snapPosition == 2) {
@@ -208,11 +226,13 @@ export class PanelJS {
                 this._snapPosition = 1;
                 if(difference < -400) {
                     this.closeFull();
+                    this._snapPositionObservable.next(0);
                     this._snapPosition = 0;
                 }
             }
             if(this._swipeDirection == '1' && this._snapPosition == 0) {
                 this.closeFull();
+                this._snapPositionObservable.next(0);
                 this._snapPosition = 0;
             }
         }
