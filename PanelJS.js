@@ -145,7 +145,7 @@ export class PanelJS {
 
     moveFab(fhPosition) {
         this._fh.classList.add("final-fab-pos");
-        document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 20 +'px)' )
+        document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)' )
         document.documentElement.style.backgroundColor="green";
         console.log(this._oldPosition, "3")
     }
