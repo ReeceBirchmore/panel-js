@@ -33,7 +33,7 @@ export class PanelJS {
             //console.log(this._ns.scrollHeight, "scroll height")
         }
 
-        this.closeFull();
+        this.expandHalf();
         
         //Run the initial start, make the element display as closed
     }
