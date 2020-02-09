@@ -1,11 +1,14 @@
-import { BehaviorSubject } from 'rxjs';
-import 'rxjs/add/observable/of';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 
 export class PanelJS {
 
 
     constructor() {      
+
+        this._snapPositionSubject = new BehaviorSubject(0);
+        this._currentSnapPosition = this._snapPositionSubject.asObservable();
+
         this._oldPosition = 0;
 
         
@@ -20,9 +23,6 @@ export class PanelJS {
         this.startup();
     }
 
-    SnapPos() {
-        return this._snapPositionObservable;
-    }
 
 
     startup() {
@@ -217,7 +217,7 @@ export class PanelJS {
             if(this._swipeDirection == '1' && this._snapPosition == 1) {
                 this.closeFull();
                 console.log("HELLO")
-                this._snapPositionObservable.next(0);
+                this._snapPositionSubject.next(0);
                 console.log("HELLO2")
                 this._snapPosition = 0;
             }
@@ -226,13 +226,13 @@ export class PanelJS {
                 this._snapPosition = 1;
                 if(difference < -400) {
                     this.closeFull();
-                    this._snapPositionObservable.next(0);
+                    this._snapPositionSubject.next(0);
                     this._snapPosition = 0;
                 }
             }
             if(this._swipeDirection == '1' && this._snapPosition == 0) {
                 this.closeFull();
-                this._snapPositionObservable.next(0);
+                this._snapPositionSubject.next(0);
                 this._snapPosition = 0;
             }
         }
