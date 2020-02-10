@@ -42,7 +42,6 @@ export class PanelJS {
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
             //console.log(this._ns.scrollHeight, "scroll height")
         }
-
         this.expandHalf();
         
         //Run the initial start, make the element display as closed
@@ -100,19 +99,40 @@ export class PanelJS {
     touchMove(e) {
         this._clientYNew = e.touches[0].clientY; //new touch position coordinates
         this._fh.style.bottom = 0;
+        let movingDifference = this._clientY - this._clientYNew 
         
         this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
         //Define the limits of the user swiping to prevent the card coming off the screen
         if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
             document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
 
-            //Work out inner height, halve it
+            //Work out inner height, halve it to move the FAB
             let mathsNum = window.innerHeight / 2;
 
             if(this._newPositionY < mathsNum) {
                 let fhPosition = -this._newPositionY; 
                 document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)')
             }
+
+
+
+
+            //display messages
+            if(this._snapPosition == 4) {
+                if(movingDifference < -250) {
+                    document.getElementById("closeSettingsBg").style.display = "block";
+                    document.getElementById("warningMessage").style.display = "block";
+                } else {
+                    document.getElementById("warningMessage").style.display = "none";
+                    document.getElementById("closeSettingsBg").style.display = "none";
+                }
+            }
+
+       
+
+
+
+
         } else {
         //console.log("Do not draw")
         }
@@ -121,34 +141,33 @@ export class PanelJS {
 
     //settingsLikePanel expansion
     expandSettings() {
-        this.animatePanel('75', "green", this._stageSettingSize);
-        this._lockFlag = true;
+        this.animatePanel('75', "silver", this._stageSettingSize);
+        this._snapPosition = 4;
+        
     }
 
     //stage 2 expansion
     expandFull() {
         this.animatePanel('100', "brown", this._stage2Size);
+        this._snapPosition = 2;   
+ 
     }
 
     //stage 1 expansion
     expandHalf() {
-        if(this._lockFlag) {
-            this.animatePanel('75', "green", this._stageSettingSize);
-        } else {
-            this.animatePanel('50', "green", this._stage1Size);
-        }
-
+        this.animatePanel('50', "green", this._stage1Size);
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
+        this._snapPosition = 1;        
     }
     
     //stage 0 expansion
     closeFull() {
         this.animatePanel('20', "blue", this._stage0Size);
-         
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
-        this._lockFlag = false;
+        this._snapPosition = 0;   
+        
     }
 
     animatePanel(elPosition, color, stageSize) {
@@ -157,16 +176,22 @@ export class PanelJS {
         }
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
-        if(document.documentElement.style.backgroundColor = color) {
-            document.documentElement.style.setProperty("--background-color", "purple");
-            console.log("bounceback test colour")
+        /* Weird ass hacky fix to get it working on Safari, if the bg colour
+        isn't the colour passed thru, make it purple, tbh this shouldn't work
+        but it does, so dont fuckin break it please */
+        if(document.getElementById("panelJS").style.backgroundColor == color) {
+            document.getElementById("panelJS").style.backgroundColor = "purple";
         } else {
-            document.documentElement.style.setProperty("--background-color", color);
-            console.log("original colour")
+        document.getElementById("panelJS").style.backgroundColor = color
         }
-
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
+
+
+        
+
+        
+        
     }
 
     moveFab(fhPosition) {
@@ -207,45 +232,100 @@ export class PanelJS {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
             }
 
+
+
+
+
+
             //Manage upward swipes
-            if(this._swipeDirection == '0' && this._snapPosition == 1) {
-                this.expandFull();
-                this._snapPosition = 2;
-            }
-            if(this._swipeDirection == '0' && this._snapPosition == 0) {
-                this.expandHalf();
-                this._snapPosition = 1;
-                if(difference > 300) {
-                    this.expandFull();
-                    this._snapPosition = 2;
-                }
-            }
             if(this._swipeDirection == '0' && this._snapPosition == 2) {
                 this.expandFull();
+                console.log("1 up")
             }
 
-            //Manage downward swipes
-            if(this._swipeDirection == '1' && this._snapPosition == 1) {
-                this.closeFull();
-                console.log("HELLO")
-                this._snapPositionSubject.next(0);
-                console.log("HELLO2")
-                this._snapPosition = 0;
-            }
-            if(this._swipeDirection == '1' && this._snapPosition == 2) {
+
+            if(this._swipeDirection == '0' && this._snapPosition == 1) {
+                if(difference > 200) {
+                this.expandFull();
+                this._snapPosition = 2;
+                console.log("2 up")
+            } else {
                 this.expandHalf();
-                this._snapPosition = 1;
-                if(difference < -400) {
-                    this.closeFull();
-                    this._snapPositionSubject.next(0);
-                    this._snapPosition = 0;
+                console.log("2.5 up")
                 }
             }
+            if(this._swipeDirection == '0' && this._snapPosition == 0) {
+                if (difference > 100) {
+                    this.expandHalf();
+                    this._snapPosition = 1;
+                    console.log("3.5 up")
+                    } else if(difference > 300) {
+                    this.expandFull();
+                    this._snapPosition = 2;
+                    console.log("3 up")
+                    } else {
+                    this.closeFull();
+                    this._snapPosition = 0;
+                    console.log("bounce back closed")
+                }
+            }
+            
+
+
+            //Settings page management
+            if(this._swipeDirection == '0' && this._snapPosition == 4) {
+                this.expandSettings();
+                this._snapPosition = 4;
+            }
+
+
+
+            //Manage downward swipes
+
+
+
+            //Settings page management
+
+
+
             if(this._swipeDirection == '1' && this._snapPosition == 0) {
                 this.closeFull();
                 this._snapPositionSubject.next(0);
                 this._snapPosition = 0;
+                console.log("1 down")
             }
+            if(this._swipeDirection == '1' && this._snapPosition == 1) {
+                this.closeFull();
+                this._snapPositionSubject.next(0);
+                this._snapPosition = 0;
+                console.log("2 down")
+            }
+
+            if(this._swipeDirection == '1' && this._snapPosition == 2) {
+                this.expandHalf();
+                this._snapPosition = 1;
+                console.log("3 down")
+                if(difference < -400) {
+                    this.closeFull();
+                    this._snapPositionSubject.next(0);
+                    this._snapPosition = 0;
+                    console.log("3.5 down")
+                }
+            }
+
+            if(this._swipeDirection == '1' && this._snapPosition == 4) {
+                this.expandSettings();
+                this._snapPosition = 4;
+                console.log(difference)
+                console.log("expand settings")
+                if(difference < -200) {
+                    this.expandHalf();
+                    this._snapPositionSubject.next(0);
+                    console.log("expand other thing")
+                }
+            }
+
+            
         }
     }
     cancelTouch(e) {
