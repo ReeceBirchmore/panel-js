@@ -119,10 +119,10 @@ export class PanelJS {
     }
 
 
-//stage 1 expansion
+    //settingsLikePanel expansion
     expandSettings() {
         this.animatePanel('75', "green", this._stageSettingSize);
-        
+        this._lockFlag = true;
     }
 
     //stage 2 expansion
@@ -132,7 +132,11 @@ export class PanelJS {
 
     //stage 1 expansion
     expandHalf() {
-        this.animatePanel('50', "green", this._stage1Size);
+        if(this._lockFlag) {
+            this.animatePanel('75', "green", this._stageSettingSize);
+        } else {
+            this.animatePanel('50', "green", this._stage1Size);
+        }
 
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
@@ -141,9 +145,10 @@ export class PanelJS {
     //stage 0 expansion
     closeFull() {
         this.animatePanel('20', "blue", this._stage0Size);
-
+         
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
+        this._lockFlag = false;
     }
 
     animatePanel(elPosition, color, stageSize) {
@@ -152,7 +157,13 @@ export class PanelJS {
         }
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
-        document.documentElement.style.setProperty("--background-color", color);
+        if(document.documentElement.style.backgroundColor = color) {
+            document.documentElement.style.setProperty("--background-color", "purple");
+            console.log("bounceback test colour")
+        } else {
+            document.documentElement.style.setProperty("--background-color", color);
+            console.log("original colour")
+        }
 
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
