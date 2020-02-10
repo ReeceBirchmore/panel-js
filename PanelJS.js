@@ -68,17 +68,18 @@ export class PanelJS {
     * on the size of the screen or configured options
     */
 
-    coolMathGames(stageSize) {
-        //determine staging sizes and translations
-        this._stage0Size = -(-20 / 100); //work out the size for the closed state
-        this._stage1Size = -(-50 / 100); //work out the size for the half state
-        this._stage2Size = -(-100 / 100); //work out the size for the full state
-        this._stageSettingSize = -(-75 / 100) //work out the size for the settings
+   coolMathGames(stageSize) {
+    //determine staging sizes and translations
+    this._stage0Size = -(-20 / 100); //work out the size for the closed state
+    this._stage1Size = -(-50 / 100); //work out the size for the half state
+    this._stage2Size = -(-100 / 100); //work out the size for the full state
+    this._stageSettingSize = -(-75 / 100) //work out the size for the settings
+    this._mathsNum = window.innerHeight / 2; //grab the inner window height for the fabs
 
-        this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
-        //console.log(window);
-        return this._stagedPosition;
-    }
+
+    this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
+    return this._stagedPosition;
+}
     /*
     * This is activated whenever the user presses a finger on the screen
     * we will take the following information:
@@ -89,54 +90,40 @@ export class PanelJS {
     * function to allow the logic to determine where the element should snap
     */
 
-    touchStart(e) {
-        this._lock = false;
-        document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
-        this._clientY = e.changedTouches[0].clientY; //initial touch point
-    }
+   touchStart(e) {
+    this._lock = false;
+    document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
+    this._clientY = e.changedTouches[0].clientY; //initial touch point
+    this._start = Date.now(); //start the timer for speed calculation
+}
 
 
-    touchMove(e) {
-        this._clientYNew = e.touches[0].clientY; //new touch position coordinates
-        this._fh.style.bottom = 0;
-        let movingDifference = this._clientY - this._clientYNew 
-        
-        this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
-        //Define the limits of the user swiping to prevent the card coming off the screen
-        if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
-            document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
-
-            //Work out inner height, halve it to move the FAB
-            let mathsNum = window.innerHeight / 2;
-
-            if(this._newPositionY < mathsNum) {
-                let fhPosition = -this._newPositionY; 
-                document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)')
-            }
-
-
-
-
-            //display messages
-            if(this._snapPosition == 4) {
-                if(movingDifference < -250) {
-                    document.getElementById("closeSettingsBg").style.display = "block";
-                    document.getElementById("warningMessage").style.display = "block";
-                } else {
-                    document.getElementById("warningMessage").style.display = "none";
-                    document.getElementById("closeSettingsBg").style.display = "none";
-                }
-            }
-
-       
-
-
-
-
-        } else {
-        //console.log("Do not draw")
+touchMove(e) {
+    this._clientYNew = e.touches[0].clientY; //new touch position coordinates
+    this._fh.style.bottom = 0;
+    
+    this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
+    //Define the limits of the user swiping to prevent the card coming off the screen
+    if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
+        document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
+        if(this._newPositionY < this._mathsNum) {
+            document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)')
         }
+    } else {
+        //console.log("Do not draw")
     }
+
+        //display messages
+        if(this._snapPosition == 4) {
+            if(movingDifference < -250) {
+                document.getElementById("closeSettingsBg").style.display = "block";
+                document.getElementById("warningMessage").style.display = "block";
+            } else {
+                document.getElementById("warningMessage").style.display = "none";
+                document.getElementById("closeSettingsBg").style.display = "none";
+            }
+        }
+}
 
 
     //settingsLikePanel expansion
@@ -210,11 +197,13 @@ export class PanelJS {
     */
 
     touchEnd(e) {
-        //this._fh.style.bottom = null;
-        //Find the direction the user swiped, useful for staging later
         this._clientYNew = e.changedTouches[0].clientY;
-
         let difference = this._clientY - this._clientYNew;
+        const time = Date.now() - this._start;
+        const speed = difference / time * 10;
+
+        //Find the direction the user swiped, useful for staging later
+
         if(this._lock == false) {
             if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
@@ -255,15 +244,24 @@ export class PanelJS {
                 }
             }
             if(this._swipeDirection == '0' && this._snapPosition == 0) {
-                if (difference > 100) {
+                                
+                if(speed > 8 && difference > 40) {
+                    this.expandFull();
+                    this._snapPosition = 2;
+                    console.log("Speed expand")
+                }
+
+                else if (difference > 80) {
                     this.expandHalf();
                     this._snapPosition = 1;
                     console.log("3.5 up")
-                    } else if(difference > 300) {
+                    } 
+                else if(difference > 300) {
                     this.expandFull();
                     this._snapPosition = 2;
                     console.log("3 up")
-                    } else {
+                    } 
+                else {
                     this.closeFull();
                     this._snapPosition = 0;
                     console.log("bounce back closed")
