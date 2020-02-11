@@ -93,6 +93,7 @@ export class PanelJS {
    touchStart(e) {
     this._lock = false;
     document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
+    document.documentElement.style.setProperty("--map-blur-transition", "0s");
     this._clientY = e.changedTouches[0].clientY; //initial touch point
     this._start = Date.now(); //start the timer for speed calculation
 }
@@ -106,8 +107,12 @@ touchMove(e) {
     //Define the limits of the user swiping to prevent the card coming off the screen
     if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
         document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
+        document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
+        console.log("Blur: "+this._newPositionY);
         if(this._newPositionY < this._mathsNum) {
-            document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)')
+            document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)');
+            console.log("Blur: "+this._newPositionY);
+            document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
         }
     } else {
         //console.log("Do not draw")
@@ -130,6 +135,7 @@ touchMove(e) {
     expandSettings() {
         this.animatePanel('75', "silver", this._stageSettingSize);
         this._snapPosition = 4;
+        this.mapBlur();
         
     }
 
@@ -161,8 +167,10 @@ touchMove(e) {
         if(!this._el.classList.contains("move")) {
             this._el.classList.add("move");
         }
+        
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
+        
         /* Weird ass hacky fix to get it working on Safari, if the bg colour
         isn't the colour passed thru, make it purple, tbh this shouldn't work
         but it does, so dont fuckin break it please */
@@ -186,6 +194,9 @@ touchMove(e) {
         document.documentElement.style.setProperty("--move-value-a", 'translateY(' + fhPosition + 'px)' )
         document.documentElement.style.backgroundColor="green";
 
+        document.documentElement.style.setProperty("--map-blur", `blur(${(fhPosition-170)/50}px)`);
+
+
     }
 
 
@@ -196,11 +207,17 @@ touchMove(e) {
     * which allows us to determine where the element should snap    
     */
 
+    mapBlur() {
+        document.documentElement.style.setProperty("--map-blur-transition", "0.5s");
+        document.documentElement.style.setProperty("--map-blur", "blur(10px)");
+    }
+
     touchEnd(e) {
+        document.documentElement.style.setProperty("--map-blur-transition", "0.5s");
         this._clientYNew = e.changedTouches[0].clientY;
         let difference = this._clientY - this._clientYNew;
         const time = Date.now() - this._start;
-        const speed = difference / time * 10;
+        const speed = difference / time * 10; 
 
         //Find the direction the user swiped, useful for staging later
 
@@ -210,6 +227,7 @@ touchMove(e) {
             } 
             else if(difference > 1) {
                 this._swipeDirection = 0; //upward swipe
+                this.mapBlur();
             }
             else if(difference == 0) {
                 this._swipeDirection = 3; //no swipe, reject and give a fake value
