@@ -42,7 +42,7 @@ export class PanelJS {
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
             //console.log(this._ns.scrollHeight, "scroll height")
         }
-        this.closeFull();
+        //this.closeFull();
         
         //Run the initial start, make the element display as closed
     }
