@@ -59,12 +59,10 @@ export class PanelJS {
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
             //console.log(this._ns.scrollHeight, "scroll height")
         }
-        console.log(this._ns)
     }
 
 
     noScrollStart(e) {
-        console.log("Lock Scroll")
         this._lock = true;
         this._clientY = e.touches[0].clientY;
     }
@@ -107,8 +105,6 @@ export class PanelJS {
     */
 
    touchStart(e) {
-
-
     this._lock = false;
     document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
     document.documentElement.style.setProperty("--map-blur-transition", "0s");
@@ -152,14 +148,12 @@ touchMove(e) {
         this.animatePanel('75', "silver", this._stageSettingSize);
         this._snapPosition = 4;
         this.mapBlur();
-        
     }
 
     //stage 2 expansion
     expandFull() {
         this.animatePanel('100', "brown", this._stage2Size);
         this._snapPosition = 2;   
- 
     }
 
     //stage 1 expansion
@@ -173,28 +167,30 @@ touchMove(e) {
     //stage 0 expansion
     closeFull() {
         this.animatePanel('20', "blue", this._stage0Size);
-
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
         this._snapPosition = 0;   
-        
     }
 
     animatePanel(elPosition, color, stageSize) {
         if(!this._el.classList.contains("move")) {
             this._el.classList.add("move");
         }
-        
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
         
         /* Weird ass hacky fix to get it working on Safari, if the bg colour
         isn't the colour passed thru, make it purple, tbh this shouldn't work
         but it does, so dont fuckin break it please */
-        if(document.getElementById("panelJS").style.backgroundColor == color) {
-            document.getElementById("panelJS").style.backgroundColor = "purple";
-        } else {
-        document.getElementById("panelJS").style.backgroundColor = color
+
+        var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+
+        if(iOS) {
+            if(document.getElementById("panelJS").style.backgroundColor == color) {
+                document.getElementById("panelJS").style.backgroundColor = "purple";
+            } else {
+            document.getElementById("panelJS").style.backgroundColor = color
+            }
         }
         this.coolMathGames(stageSize);
         this._oldPosition = this._stagedPosition;
