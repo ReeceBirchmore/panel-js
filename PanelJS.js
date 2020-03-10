@@ -17,7 +17,7 @@ export class PanelJS {
         this._lock = false;
         this._transitionSpeed = '0.2s';
         this._el = document.getElementById("panelJS"); //declare the element in use
-        this._ns = document.getElementById("timesPreventScroll");
+        
         this._fh = document.getElementById("fabholder");
         this._height = window.innerHeight;
         this.startup();
@@ -26,7 +26,7 @@ export class PanelJS {
 
 
     startup() {
-        console.log("Active")
+        console.log(this._el);
         //Check if panelJS element exists
         if(this._el){
             this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
@@ -42,13 +42,29 @@ export class PanelJS {
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
             //console.log(this._ns.scrollHeight, "scroll height")
         }
+
         this.closeFull();
         
         //Run the initial start, make the element display as closed
     }
 
 
+
+
+    displayTimesLock() {
+        console.log("TEST")
+        this._ns = document.getElementById("timesPreventScroll");
+        if(this._ns){
+            this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true);
+            this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
+            //console.log(this._ns.scrollHeight, "scroll height")
+        }
+        console.log(this._ns)
+    }
+
+
     noScrollStart(e) {
+        console.log("Lock Scroll")
         this._lock = true;
         this._clientY = e.touches[0].clientY;
     }
@@ -91,6 +107,8 @@ export class PanelJS {
     */
 
    touchStart(e) {
+
+
     this._lock = false;
     document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
     document.documentElement.style.setProperty("--map-blur-transition", "0s");
@@ -108,10 +126,8 @@ touchMove(e) {
     if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
         document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
         document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
-        console.log("Blur: "+this._newPositionY);
         if(this._newPositionY < this._mathsNum) {
             document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)');
-            console.log("Blur: "+this._newPositionY);
             document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
         }
     } else {
@@ -157,6 +173,7 @@ touchMove(e) {
     //stage 0 expansion
     closeFull() {
         this.animatePanel('20', "blue", this._stage0Size);
+
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
         this._snapPosition = 0;   
@@ -247,7 +264,6 @@ touchMove(e) {
             //Manage upward swipes
             if(this._swipeDirection == '0' && this._snapPosition == 2) {
                 this.expandFull();
-                console.log("1 up")
             }
 
 
@@ -255,10 +271,9 @@ touchMove(e) {
                 if(difference > 200) {
                 this.expandFull();
                 this._snapPosition = 2;
-                console.log("2 up")
+
             } else {
                 this.expandHalf();
-                console.log("2.5 up")
                 }
             }
             if(this._swipeDirection == '0' && this._snapPosition == 0) {
@@ -266,23 +281,21 @@ touchMove(e) {
                 if(speed > 8 && difference > 40) {
                     this.expandFull();
                     this._snapPosition = 2;
-                    console.log("Speed expand")
                 }
 
                 else if (difference > 80) {
                     this.expandHalf();
                     this._snapPosition = 1;
-                    console.log("3.5 up")
+ 
                     } 
                 else if(difference > 300) {
                     this.expandFull();
                     this._snapPosition = 2;
-                    console.log("3 up")
+                   
                     } 
                 else {
                     this.closeFull();
                     this._snapPosition = 0;
-                    console.log("bounce back closed")
                 }
             }
             
@@ -308,36 +321,29 @@ touchMove(e) {
                 this.closeFull();
                 this._snapPositionSubject.next(0);
                 this._snapPosition = 0;
-                console.log("1 down")
             }
             if(this._swipeDirection == '1' && this._snapPosition == 1) {
                 this.closeFull();
                 this._snapPositionSubject.next(0);
                 this._snapPosition = 0;
-                console.log("2 down")
             }
 
             if(this._swipeDirection == '1' && this._snapPosition == 2) {
                 this.expandHalf();
                 this._snapPosition = 1;
-                console.log("3 down")
                 if(difference < -400) {
                     this.closeFull();
                     this._snapPositionSubject.next(0);
                     this._snapPosition = 0;
-                    console.log("3.5 down")
                 }
             }
 
             if(this._swipeDirection == '1' && this._snapPosition == 4) {
                 this.expandSettings();
                 this._snapPosition = 4;
-                console.log(difference)
-                console.log("expand settings")
                 if(difference < -200) {
                     this.expandHalf();
                     this._snapPositionSubject.next(0);
-                    console.log("expand other thing")
                 }
             }
 
