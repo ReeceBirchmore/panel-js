@@ -69,11 +69,17 @@ export class PanelJS {
 
     noScroll(e){
         this._clientYNew = e.touches[0].clientY;
-        
-        if(this._clientYNew > this._clientY && this._ns.scrollTop <= 0) {
+        this._ns.style.overflow = "scroll";
+        if(this._snapPosition === 1 && this._ns.scrollTop > 0 && this._clientYNew < this._clientY) {
+            this._lock = false; 
+            this._ns.style.overflow = "hidden";
+            console.log(this._ns.style.overflow)
+            this.touchMove(e);
+
+        } else if(this._clientYNew > this._clientY && this._ns.scrollTop <= 0) {
             this._lock = false; 
             this.touchMove(e);  
-        }
+        } 
 
     }
 
@@ -114,8 +120,11 @@ export class PanelJS {
 
 
 touchMove(e) {
+    console.log("TESTING")
     this._clientYNew = e.touches[0].clientY; //new touch position coordinates
     this._fh.style.bottom = 0;
+
+    console.log(this._clientYNew)
     
     this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
     //Define the limits of the user swiping to prevent the card coming off the screen
@@ -129,17 +138,6 @@ touchMove(e) {
     } else {
         //console.log("Do not draw")
     }
-
-        //display messages
-        if(this._snapPosition == 4) {
-            if(movingDifference < -250) {
-                document.getElementById("closeSettingsBg").style.display = "block";
-                document.getElementById("warningMessage").style.display = "block";
-            } else {
-                document.getElementById("warningMessage").style.display = "none";
-                document.getElementById("closeSettingsBg").style.display = "none";
-            }
-        }
 }
 
 
