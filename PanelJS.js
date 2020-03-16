@@ -26,7 +26,6 @@ export class PanelJS {
 
 
     startup() {
-        console.log(this._el);
         //Check if panelJS element exists
         if(this._el){
             this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
@@ -34,17 +33,15 @@ export class PanelJS {
             this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
             this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
         } else {
-            //console.log("No element found with id panelJS");
+            //Do nothing
         }
         //Check if no scroll element exists
         if(this._ns){
             this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true);
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
-            //console.log(this._ns.scrollHeight, "scroll height")
         }
 
         this.closeFull();
-        
         //Run the initial start, make the element display as closed
     }
 
@@ -52,12 +49,10 @@ export class PanelJS {
 
 
     displayTimesLock() {
-        console.log("TEST")
         this._ns = document.getElementById("timesPreventScroll");
         if(this._ns){
             this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true);
             this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
-            //console.log(this._ns.scrollHeight, "scroll height")
         }
     }
 
@@ -73,7 +68,6 @@ export class PanelJS {
         if(this._snapPosition === 1 && this._ns.scrollTop > 0 && this._clientYNew < this._clientY) {
             this._lock = false; 
             this._ns.style.overflow = "hidden";
-            console.log(this._ns.style.overflow)
             this.touchMove(e);
 
         } else if(this._clientYNew > this._clientY && this._ns.scrollTop <= 0) {
@@ -88,18 +82,18 @@ export class PanelJS {
     * on the size of the screen or configured options
     */
 
-   coolMathGames(stageSize) {
-    //determine staging sizes and translations
-    this._stage0Size = -(-20 / 100); //work out the size for the closed state
-    this._stage1Size = -(-50 / 100); //work out the size for the half state
-    this._stage2Size = -(-100 / 100); //work out the size for the full state
-    this._stageSettingSize = -(-75 / 100) //work out the size for the settings
-    this._mathsNum = window.innerHeight / 2; //grab the inner window height for the fabs
+    coolMathGames(stageSize) {
+        //determine staging sizes and translations
+        this._stage0Size = -(-20 / 100); //work out the size for the closed state
+        this._stage1Size = -(-50 / 100); //work out the size for the half state
+        this._stage2Size = -(-100 / 100); //work out the size for the full state
+        this._stageSettingSize = -(-75 / 100) //work out the size for the settings
+        this._mathsNum = window.innerHeight / 2; //grab the inner window height for the fabs
 
 
-    this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
-    return this._stagedPosition;
-}
+        this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
+        return this._stagedPosition;
+    }
     /*
     * This is activated whenever the user presses a finger on the screen
     * we will take the following information:
@@ -110,35 +104,36 @@ export class PanelJS {
     * function to allow the logic to determine where the element should snap
     */
 
-   touchStart(e) {
-    this._lock = false;
-    document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
-    document.documentElement.style.setProperty("--map-blur-transition", "0s");
-    this._clientY = e.changedTouches[0].clientY; //initial touch point
-    this._start = Date.now(); //start the timer for speed calculation
-}
-
-
-touchMove(e) {
-    console.log("TESTING")
-    this._clientYNew = e.touches[0].clientY; //new touch position coordinates
-    this._fh.style.bottom = 0;
-
-    console.log(this._clientYNew)
-    
-    this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
-    //Define the limits of the user swiping to prevent the card coming off the screen
-    if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
-        document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
-        document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
-        if(this._newPositionY < this._mathsNum) {
-            document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)');
-            document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
-        }
-    } else {
-        //console.log("Do not draw")
+    touchStart(e) {
+        this._lock = false;
+        document.documentElement.style.setProperty("--transition-value", "0s"); //reset transition   
+        document.documentElement.style.setProperty("--map-blur-transition", "0s");
+        this._clientY = e.changedTouches[0].clientY; //initial touch point
+        this._start = Date.now(); //start the timer for speed calculation
     }
-}
+
+
+    touchMove(e) {
+        this._clientYNew = e.touches[0].clientY; //new touch position coordinates
+        this._fh.style.bottom = 0;
+
+        
+        this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
+        //Define the limits of the user swiping to prevent the card coming off the screen
+        if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
+            document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
+            document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
+            if(this._newPositionY < this._mathsNum) {
+                document.documentElement.style.setProperty("--move-value-a", 'translateY(' + -this._newPositionY + 'px)');
+                document.documentElement.style.setProperty("--map-blur", `blur(${(this._newPositionY-170)/50}px)`);
+            }
+        } else {
+            //Do nothing
+        }
+    }
+
+
+
 
 
     //settingsLikePanel expansion
@@ -191,13 +186,7 @@ touchMove(e) {
             }
         }
         this.coolMathGames(stageSize);
-        this._oldPosition = this._stagedPosition;
-
-
-        
-
-        
-        
+        this._oldPosition = this._stagedPosition; 
     }
 
     moveFab(fhPosition) {
