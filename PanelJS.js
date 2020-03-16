@@ -4,6 +4,120 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class PanelJS {
 
 
+    /*
+    constructor() {
+        let $ = function(id) { return document.querySelector("#" + id); }
+
+        this._snapPositionSubject = new BehaviorSubject(0);
+        this._currentSnapPosition = this._snapPositionSubject.asObservable();
+
+        this._oldPosition = 0;        
+        this.lastUpdateCall=null;
+        this._snapPosition = 0;
+        this._lock = false;
+        this._transitionSpeed = '0.2s';
+
+        this._el = $("panelJS"); //declare the element in use
+        this._fh = $("fabholder");
+
+        this._mathsNum = window.innerHeight / 2; //grab the inner window height for the fabs
+        this.startup();
+    }
+
+
+    startup() {
+        //Startup Code
+     if(this._el){
+            this._el.addEventListener("touchstart", evt => this.touchStart(evt), true);
+            this._el.addEventListener("touchmove", evt => this.touchMove(evt), true);
+            this._el.addEventListener("touchend", evt => this.touchEnd(evt), true);
+            this._el.addEventListener("touchcancel", evt => this.cancelTouch(evt), true);
+        }
+        //Check if no scroll element exists
+        if(this._ns){
+            this._ns.addEventListener("touchmove", evt => this.noScroll(evt), true);
+            this._ns.addEventListener("touchstart", evt => this.noScrollStart(evt), true);
+        }
+        this.closeFull();
+    }
+
+
+    quickMaths(val) {
+    }
+
+
+
+    touchInitiate(e) {
+    }
+    
+    touchMove(e) {
+    }
+
+    touchCancel(e) {
+    }
+
+    touchEnd(e) {
+    }
+
+
+
+    expandSettings() { 
+    }
+    expandFull() { 
+        this._snapPosition = 2;   
+    }
+    expandHalf() {
+        //this.animatePanel('50', "green", this._stage1Size);
+        //let fhPosition = -this._oldPosition;  
+        //this.moveFab(fhPosition);
+        //this._snapPosition = 1;        
+    }
+    closeFull() {
+    }
+
+
+
+
+
+    animatePanel() {
+        //This is for when the user releases their finger and the panel must snap to a position
+    }
+
+    moveFab() {
+        //This is tied in to animatePanel
+    }
+
+    trackFingerAnim() {
+        //Using reqAnimFrame we can run this function, all updates occur within this function
+    }
+
+
+
+
+
+
+
+    
+
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
     constructor() {      
 
         this._snapPositionSubject = new BehaviorSubject(0);
@@ -12,7 +126,7 @@ export class PanelJS {
         this._oldPosition = 0;
 
         
-
+        this.lastUpdateCall=null;
         this._snapPosition = 0;
         this._lock = false;
         this._transitionSpeed = '0.2s';
@@ -77,10 +191,6 @@ export class PanelJS {
 
     }
 
-    /*
-    * This is the function that will sort out the sizing of elements dependant
-    * on the size of the screen or configured options
-    */
 
     coolMathGames(stageSize) {
         //determine staging sizes and translations
@@ -94,15 +204,7 @@ export class PanelJS {
         this._stagedPosition = window.innerHeight * stageSize; //determine the position for snapped element
         return this._stagedPosition;
     }
-    /*
-    * This is activated whenever the user presses a finger on the screen
-    * we will take the following information:
-    * - The current position of the object, relative to the screen size
-    * - The initial touching point (where the finger is first placed)
-    *  
-    * We use this information as the initial setup for the final touchend 
-    * function to allow the logic to determine where the element should snap
-    */
+
 
     touchStart(e) {
         this._lock = false;
@@ -110,15 +212,31 @@ export class PanelJS {
         document.documentElement.style.setProperty("--map-blur-transition", "0s");
         this._clientY = e.changedTouches[0].clientY; //initial touch point
         this._start = Date.now(); //start the timer for speed calculation
+        this._fh.style.bottom = 0;
     }
 
 
-    touchMove(e) {
-        this._clientYNew = e.touches[0].clientY; //new touch position coordinates
-        this._fh.style.bottom = 0;
 
+   
+
+    touchMove(e) {
+        console.log(e.touches[0].clientY)
+       // e.preventDefault();
+        this._clientYNew = e.touches[0].clientY; //new touch position coordinates
+        if(this.lastUpdateCall) cancelAnimationFrame(this.update);
         
-        this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
+        lastUpdateCall = requestAnimationFrame(function() { //save the requested frame so we can check next time if one was already requested
+            
+            this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); // Do the distance calculation inside the animation frame request also, so the browser doesn't have to do it more often than necessary 
+            update(); //all the function that handles the request
+            this.lastUpdateCall=null; // Since this frame didn't get cancelled, the lastUpdateCall should be reset so new frames can be called. 
+        });     
+}
+
+
+
+    update() {
+
         //Define the limits of the user swiping to prevent the card coming off the screen
         if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
             document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
@@ -131,8 +249,6 @@ export class PanelJS {
             //console.log("Do not draw")
         }
     }
-
-
 
 
     //settingsLikePanel expansion
@@ -158,7 +274,7 @@ export class PanelJS {
     
     //stage 0 expansion
     closeFull() {
-        this.animatePanel('20', "blue", this._stage0Size);
+        this.animatePanel('50', "blue", this._stage0Size);
         let fhPosition = -this._oldPosition;  
         this.moveFab(fhPosition);
         this._snapPosition = 0;   
@@ -171,9 +287,8 @@ export class PanelJS {
         document.documentElement.style.setProperty("--transition-value", this._transitionSpeed);
         document.documentElement.style.setProperty("--move-value", 'translateY(-'+ elPosition +'%)');
         
-        /* Weird ass hacky fix to get it working on Safari, if the bg colour
-        isn't the colour passed thru, make it purple, tbh this shouldn't work
-        but it does, so dont fuckin break it please */
+  
+
 
         var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
@@ -199,13 +314,7 @@ export class PanelJS {
     }
 
 
-    /*
-    * This is where the touch ends, 
-    * In here we can determine the direction, speed and distance of 
-    * the position of the dropped element relative to its start point
-    * which allows us to determine where the element should snap    
-    */
-
+  
     mapBlur() {
         document.documentElement.style.setProperty("--map-blur-transition", "0.5s");
         document.documentElement.style.setProperty("--map-blur", "blur(10px)");
@@ -336,4 +445,3 @@ export class PanelJS {
         console.log("CANCELLED");
     }
 }
-
