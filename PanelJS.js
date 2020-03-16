@@ -117,8 +117,18 @@ export class PanelJS {
         this._clientYNew = e.touches[0].clientY; //new touch position coordinates
         this._fh.style.bottom = 0;
 
+        window.webkitRequestAnimationFrame(evt => this.animateMovement(this._clientYNew));
+       
+        e.preventDefault();
         
-        this._newPositionY = this._oldPosition + (this._clientY - this._clientYNew); //old position of the element + the difference in touch points
+    }
+
+
+    
+    animateMovement(clientYNew) {
+
+
+        this._newPositionY = this._oldPosition + (this._clientY - clientYNew); //old position of the element + the difference in touch points
         //Define the limits of the user swiping to prevent the card coming off the screen
         if(this._newPositionY > 10 && this._newPositionY < window.innerHeight && this._lock == false) {
             document.documentElement.style.setProperty("--move-value", 'translateY(' + -this._newPositionY + 'px)');
