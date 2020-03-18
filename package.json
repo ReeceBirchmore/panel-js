@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/ReeceBirchmore/panel-js#readme",
   "dependencies": {
+    "hammerjs": "^2.0.8",
     "rxjs": "^6.5.4"
   }
 }
